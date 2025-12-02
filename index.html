@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear, HW </title>
+    <style>
+        /* 폰트 임포트 */
+        @font-face {
+            font-family: 'GangwonEdu_OTFBoldA';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* 1. 기본 스타일 설정 */
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fcf6f5; /* 따뜻한 배경색 */
+            font-family: 'GangwonEdu_OTFBoldA', 'Arial', sans-serif; 
+            overflow: hidden;
+        }
+
+        /* ------------------------------------------- */
+        /* 2. 케이크 컨테이너 (모든 장식의 기준점) */
+        /* ------------------------------------------- */
+        .cake-container {
+            position: relative; /* 중요: 이 요소 안의 absolute 자식들의 기준이 됩니다. */
+            width: 800px;  /* PC 기준 크기 */
+            height: 800px; /* PC 기준 크기 */
+            
+            background-image: url('cake2.png'); /* 케이크 이미지 */
+            background-size: contain; 
+            background-repeat: no-repeat;
+            background-position: center;
+            
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+        }
+
+        /* ------------------------------------------- */
+        /* 3. 장식 공통 스타일 (딸기, 휘핑크림, 진저맨, 숫자 양초) */
+        /* ------------------------------------------- */
+        .decoration {
+            position: absolute; /* 케이크 컨테이너 내에서 위치 지정 */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent; 
+            transition: all 0.4s ease; /* 애니메이션 효과 */
+            z-index: 10; /* 케이크 위에 보이도록 */
+        }
+
+        /* 3-1. 딸기 (클릭 가능) */
+        .strawberry {
+            width: 60px;  /* 딸기 크기 */
+            height: 60px; 
+            cursor: pointer; /* 클릭 가능 표시 */
+            background-image: url('berry.png'); /* 딸기 PNG */
+            filter: grayscale(0%) opacity(1) brightness(1.0); /* 읽기 전: 흐린 상태 */
+        }
+        .strawberry.opened {
+            filter: grayscale(0%) opacity(1) brightness(1.1) drop-shadow(0 0 10px rgba(255, 100, 100, 0.6)); /* 읽은 후: 선명한 상태 */
+            transform: scale(1.1); 
+        }
+        .strawberry:hover {
+            transform: scale(1.1) rotate(5deg); 
+        }
+
+        /* 3-2. 휘핑크림 (장식용) */
+        .whip {
+            width: 60px; /* 휘핑크림 크기 */
+            height: 60px; 
+            background-image: url('whip.png'); /* 휘핑크림 PNG */
+            z-index: 5; /* 딸기보다 아래, 케이크보다 위 */
+        }
+
+        /* 3-3. 진저브레드맨 (장식용) */
+        .man {
+            width: 120px; /* 진저맨 크기 */
+            height: 120px; 
+            background-image: url('man.png'); /* 진저맨 PNG */
+        }
+
+        /* 3-4. 숫자 1 양초 (장식용) */
+        .one-candle {
+            width: 130px; /* 양초 크기 */
+            height: 130px; 
+            background-image: url('one.png'); /* 숫자 1 양초 PNG */
+            z-index: 15; /* 가장 위에 보이도록 */
+        }
+
+        /* 3-5. 촛불 */
+        .fire {
+            width: 60px; /* 크기 */
+            height: 60px; 
+            background-image: url('fire.png'); /* 불 PNG */
+	}
+
+        /* 3-6. 하트 (장식용) */
+        .heart {
+            width: 150px; /* 크기 */
+            height: 150px; 
+            background-image: url('heart.png'); /* 하트 PNG */
+        }
+
+        /* 3-7. 별쿠키 (장식용) */
+        .star {
+            width: 80px; /* 크기 */
+            height: 80px; 
+            background-image: url('star.png'); /* 하트 PNG */
+        }
+
+        /* 3-8. 트리 쿠키 (장식용) */
+        .cookie {
+            width: 160px; /* 크기 */
+            height: 160px; 
+            background-image: url('cookie.png'); /* 트리 PNG */
+        }
+
+        /* 3-9. 선물 쿠키 (장식용) */
+        .present {
+            width: 80px; /* 크기 */
+            height: 80px; 
+            background-image: url('present.png'); /* 트리 PNG */
+        }
+
+        /* ------------------------------------------- */
+        /* 4. 장식 위치 (PC 기준) */
+        /* ------------------------------------------- */
+
+        /* 숫자 1 양초: 케이크 맨 위 중앙 */
+        .one-candle { top: 11.5%; left: 49%; transform: translateX(-50%); }
+
+        /* 촛불 */
+        .fire { top: 5.3%; left: 49%; transform: translateX(-50%); }
+
+
+        /* 딸기 6개 (클릭용) - 개별 z-index 적용됨 */
+        .s-1 { top: 20%; left: 37%; z-index:1; } 
+        .s-2 { top: 24%; left: 29%; z-index:3 } 
+        .s-3 { top: 29%; left: 36%; z-index:5 } 
+        .s-4 { top: 29.5%; right: 47%; z-index:7 } 
+        .s-5 { top: 28.5%; right: 38%; z-index:9 } 
+        .s-6 { top: 24.3%; right: 32%; z-index:12 }  
+        .s-7 { top: 20%; right: 39.5%; z-index:10 } 
+
+        /* 휘핑크림 6개 - 개별 z-index 적용됨 */
+        .w-1 { top: 22%; left: 33%; z-index:2 } 
+        .w-2 { top: 27%; left: 32%; z-index:4 } 
+        .w-3 { top: 29.5%; left: 41%; z-index:6 } 
+        .w-4 { top: 29.5%; right: 42%; z-index:8 } 
+        .w-5 { top: 27%; right: 33%; z-index:13 } 
+        .w-6 { top: 22%; right: 36%; z-index:11 } 
+
+        /* 진저브레드맨 1개 */
+        .m-1 { top: 41%; left: 21%; } /* 왼쪽*/
+
+        /* 하트 1개 */
+        .h-1 { top: 36.7%; left: 40%; } /* 왼쪽*/
+
+        /* 별 1개 */
+        .t-1 { top: 48%; right: 32%; z-index:15 } /* 왼쪽*/
+
+        /* 트리 쿠키 1개 */
+        .c-1 { top: 39%; right: 23%; z-index:14 } /* 왼쪽*/
+
+        /* 선물쿠키 1개 */
+        .p-1 { top: 48%; left: 28.5%; } /* 왼쪽*/
+
+        /* ------------------------------------------- */
+        /* 5. 편지 모달 (팝업)창 디자인 */
+        /* ------------------------------------------- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); 
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fffaf0;
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid #eecaca;
+            max-width: 400px;
+            width: 85%;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            position: relative;
+            animation: popUp 0.3s ease-out;
+        }
+        .modal-content h2 {
+            color: #d65a5a;
+            margin-bottom: 20px;
+        }
+        .modal-content p {
+            line-height: 1.6;
+            color: #555;
+            font-size: 1.1rem;
+            white-space: pre-line; 
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s;
+        }
+        .close-btn:hover { color: #d65a5a; }
+
+        @keyframes popUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        /* =========================================== */
+        /* 6. 모바일 최적화 (768px 이하 화면에서 적용) - 핵심 수정 부분 */
+        /* =========================================== */
+        @media (max-width: 768px) {
+            .cake-container {
+                /* 모바일 환경에 맞춰 컨테이너 크기 대폭 축소 */
+                width: 400px; 
+                height: 400px;
+                /* 중앙 정렬을 위해 마진 자동 설정 */
+                margin: 0 auto; 
+            }
+            
+            /* 장식 크기 조정 (모바일에서 너무 크지 않도록) */
+            .strawberry, .whip {
+                width: 33px; 
+                height: 33px;
+            }
+            .one-candle {
+                width: 60px; 
+                height: 60px;
+            }
+            .fire {
+                width: 33px; 
+                height: 33px;
+            }
+            .man {
+                width: 55px; 
+                height: 55px;
+            }
+            .heart {
+                width: 70px;
+                height: 70px;
+            }
+
+            .star {
+                width: 40px;
+                height: 40px;
+            }
+
+            .cookie {
+                width: 80px;
+                height: 80px;
+            }
+
+            .present {
+                width: 40px;
+                height: 40px;
+            }
+
+
+            /* 장식 위치 조정 (축소된 케이크 크기에 맞춰 퍼센트 값 조정) */
+            
+            /* 숫자 1 양초 */
+            .one-candle { top: 13%; left: 48%; }
+
+            /* 촛불 */
+            .fire { top: 7%; left: 48%; }
+
+            /* 딸기 7개 (s-1 ~ s-7) */
+            .s-1 { top: 20%; left: 37%; } 
+            .s-2 { top: 24%; left: 30%; } 
+            .s-3 { top: 27.5%; left: 35%; } 
+            .s-4 { top: 29%; right: 47.5%; } 
+            .s-5 { top: 27.5%; right: 38.5%; } 
+            .s-6 { top: 23.7%; right: 32.8%; } 
+            .s-7 { top: 20%; right: 40.5%; } 
+
+            /* 휘핑크림 6개 (w-1 ~ w-6) */
+            .w-1 { top: 21%; left: 32.6%; } 
+            .w-2 { top: 27%; left: 31%; } 
+            .w-3 { top: 28.5%; left: 40%; } 
+            .w-4 { top: 28.5%; right: 42.5%; } 
+            .w-5 { top: 26.6%; right: 33.6%; } 
+            .w-6 { top: 22%; right: 36%; } 
+            
+            /* 진저브레드맨, 하트, 별, 트리, 선물 */
+            .m-1 { top: 40%; left: 20%; } 
+            .h-1 { top: 37%; left: 39.5%; }
+            .t-1 { top: 48.5%; right: 32.5%; }
+            .c-1 { top: 38%; right: 23%; }
+            .p-1 { top: 47%; left: 26.5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cake-container">
+        <div class="decoration one-candle" onclick="openLetter(19, this)"></div>
+        <div class="decoration fire" onclick="openLetter(20, this)"></div>
+
+        <div class="decoration whip w-1" onclick="openLetter(2, this)"></div>
+        <div class="decoration whip w-2" onclick="openLetter(4, this)"></div>
+        <div class="decoration whip w-3" onclick="openLetter(6, this)"></div>
+        <div class="decoration whip w-4" onclick="openLetter(8, this)"></div>
+        <div class="decoration whip w-5" onclick="openLetter(10, this)"></div>
+        <div class="decoration whip w-6" onclick="openLetter(12, this)"></div>
+
+
+        <div class="decoration man m-1" onclick="openLetter(14, this)"></div>
+
+        <div class="decoration star t-1" onclick="openLetter(16, this)"></div>
+        <div class="decoration heart h-1" onclick="openLetter(18, this)"></div>
+        <div class="decoration cookie c-1" onclick="openLetter(17, this)"></div>
+        <div class="decoration present p-1" onclick="openLetter(15, this)"></div>
+
+        <div class="decoration strawberry s-1" onclick="openLetter(1, this)"></div>
+        <div class="decoration strawberry s-2" onclick="openLetter(3, this)"></div>
+        <div class="decoration strawberry s-3" onclick="openLetter(5, this)"></div>
+        <div class="decoration strawberry s-4" onclick="openLetter(7, this)"></div>
+        <div class="decoration strawberry s-5" onclick="openLetter(9, this)"></div>
+        <div class="decoration strawberry s-6" onclick="openLetter(11, this)"></div>
+        <div class="decoration strawberry s-7" onclick="openLetter(13, this)"></div>
+    </div>
+
+    <div class="modal" id="letterModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modalDate">Day 1</h2>
+            <p id="modalText">편지 내용이 여기에 나옵니다.</p>
+        </div>
+    </div>
+
+    <script>
+        // ♥ 편지 내용 (총 13개의 장식이 클릭 가능하므로 13번까지 편지를 채워야 합니다.) ♥
+        const letters = {
+            1: "Day 1. 채워야 할 편지 내용입니다.",
+            2: "Day 2. 채워야 할 편지 내용입니다.",
+            3: "Day 3. 채워야 할 편지 내용입니다.",
+            4: "Day 4. 채워야 할 편지 내용입니다.",
+            5: "Day 5. 채워야 할 편지 내용입니다..",
+            6: "Day 6. 채워야 할 편지 내용입니다.",
+            7: "Day 7. 채워야 할 편지 내용입니다.",
+            8: "Day 8. 채워야 할 편지 내용입니다.",
+            9: "Day 9. 채워야 할 편지 내용입니다.",
+            10: "Day 10. 채워야 할 편지 내용입니다.",
+            11: "Day 11. 채워야 할 편지 내용입니다.",
+            12: "Day 12. 채워야 할 편지 내용입니다.",
+            13: "Day 13. 채워야 할 편지 내용입니다.",
+            14: "Day 14. 채워야 할 편지 내용입니다.",
+            15: "Day 15. 채워야 할 편지 내용입니다.",
+            16: "Day 16. 채워야 할 편지 내용입니다.",
+            17: "Day 17. 채워야 할 편지 내용입니다.",
+            18: "Day 18. 채워야 할 편지 내용입니다.",
+            19: "Day 19. 채워야 할 편지 내용입니다.",
+            20: "Day 20. 채워야 할 편지 내용입니다."
+        };
+
+        // 페이지 로드 시 읽은 상태 확인 (로컬 저장소 이용)
+        document.addEventListener("DOMContentLoaded", () => {
+            for (let i = 1; i <= 20; i++) {
+                if (localStorage.getItem('day' + i) === 'read') {
+                    // 딸기 뿐만 아니라 모든 .decoration 요소를 찾아야 합니다.
+                    // 정확한 클래스를 찾기 위해 onclick 속성 전체를 확인합니다.
+                    const decoration = document.querySelector(`.decoration[onclick*="openLetter(${i}"]`);
+                    if(decoration) decoration.classList.add('opened');
+                }
+            }
+        });
+
+        // 편지 열기 기능
+        function openLetter(day, element) {
+            const modal = document.getElementById('letterModal');
+            const title = document.getElementById('modalDate');
+            const text = document.getElementById('modalText');
+
+            title.innerText = `To. 내사랑 (Day ${day})`;
+            text.innerText = letters[day]; 
+            
+            modal.style.display = 'flex';
+
+            // 읽음 처리 (색상 변경 및 저장)
+            element.classList.add('opened');
+            localStorage.setItem('day' + day, 'read');
+        }
+
+        // 모달 닫기 기능 (X버튼이나 배경 클릭 시)
+        function closeModal() {
+            document.getElementById('letterModal').style.display = 'none';
+        }
+
+        // 모달 바깥 배경 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('letterModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
+
